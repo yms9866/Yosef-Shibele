@@ -1,7 +1,5 @@
-import java.util.Arrays;
 import java.util.ArrayList;
 import javafx.application.Application;
-import javafx.beans.binding.StringBinding;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -15,7 +13,6 @@ import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -23,16 +20,36 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+
+/**
+ * @author Yosef Shibele
+ * @version 1
+ * @ This calculator operates on two one-digit positive integers
+ */
+
+
 public class Calculator extends Application {
-    public ArrayList<String> num = new ArrayList<String>(3);
+    public ArrayList<String> SYMBOLS = new ArrayList<String>(3);
 
     public static Button makeButton(String txt) {
         Button button = new Button(txt);
         button.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
         button.setMaxWidth(Double.MAX_VALUE);
         button.setMaxHeight(Double.MAX_VALUE);
-        button.setPadding(new Insets(25,35,25,35));
+        button.setPadding(new Insets(25, 35, 25, 35));
         button.setFont(new Font(20));
+        button.hoverProperty();
+
+        // Add mouse event handlers for hover effect
+        button.setOnMouseEntered(event -> {
+            button.setStyle(
+                    "-fx-background-color: purple; -fx-text-fill: white; -fx-font-size: 20px; -fx-padding: 25px 35px 25px 35px;");
+        });
+
+        button.setOnMouseExited(event -> {
+            button.setStyle(
+                    "-fx-background-color: gray; -fx-text-fill: black; -fx-font-size: 20px; -fx-padding: 25px 35px 25px 35px;");
+        });
         button.setBorder(new Border(
                 new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, new CornerRadii(4), new BorderWidths(1))));
         return button;
@@ -43,27 +60,9 @@ public class Calculator extends Application {
         stage.setTitle("My Calculator");
 
         GridPane gPane = new GridPane();
-        
-        // ColumnConstraints column = new ColumnConstraints();
-
-        // column.setPercentWidth(25);
-        // column.setFillWidth(true);
-
-        // ColumnConstraints column2 = new ColumnConstraints();
-
-        // column2.setPercentWidth(25);
-        // column2.setFillWidth(true);
-        // ColumnConstraints column3 = new ColumnConstraints();
-
-        // column3.setPercentWidth(25);
-        // column3.setFillWidth(true);
-        // ColumnConstraints column4 = new ColumnConstraints();
-
-        // column4.setPercentWidth(25);
-        // column4.setFillWidth(true);
         TextField textField = new TextField();
-
         Label label = new Label();
+
         label.setPadding(new Insets(30));
         label.setBorder(new Border(
                 new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
@@ -74,6 +73,7 @@ public class Calculator extends Application {
         Button bn1 = makeButton("AC");
         bn1.setOnAction(new Updater(label, textField, bn1));
         Button bn2 = makeButton("%");
+
         bn2.setOnAction(new Updater(label, textField, bn2));
         Button bn3 = makeButton("/");
         bn3.setOnAction(new Updater(label, textField, bn3));
@@ -85,8 +85,7 @@ public class Calculator extends Application {
         bn6.setOnAction(new Updater(label, textField, bn6));
         Button bn7 = makeButton("BackSpc");
         bn7.setOnAction(new Updater(label, textField, bn7));
-       
-       
+
         gPane.add(label, 0, 0, 4, 1);
         GridPane.setHgrow(label, Priority.ALWAYS);
         gPane.add(textField, 0, 1, 4, 1);
@@ -106,7 +105,7 @@ public class Calculator extends Application {
         gPane.add(bn7, 0, 7, 4, 1);
         GridPane.setHgrow(bn7, Priority.ALWAYS);
 
-        String[] symbols = { "7", "8", "9", "×", "4", "5", "6", "-", "1", "2","3", "+" };
+        String[] symbols = { "7", "8", "9", "×", "4", "5", "6", "-", "1", "2", "3", "+" };
         int count = 0;
         for (int row = 3; row < 7; row++) {
             for (int col = 0; col < 4; col++) {
@@ -120,12 +119,12 @@ public class Calculator extends Application {
             if (count >= 12) {
                 break;
             }
-        
+
         }
         gPane.setHgap(0);
         gPane.setVgap(0);
 
-        // gPane.getColumnConstraints().addAll(column, column2, column3, column4);
+        
         Scene scene = new Scene(gPane);
 
         stage.setScene(scene);
@@ -152,55 +151,53 @@ public class Calculator extends Application {
             if (this.bn.getText() != "AC" && this.bn.getText() != "BackSpc") {
                 this.tf.appendText(bn.getText());
 
-                num.add(this.bn.getText());
+                SYMBOLS.add(this.bn.getText());
             }
             if (this.bn.getText() == "AC") {
                 this.tf.clear();
                 this.l.setText("");
-                num.clear();
+                SYMBOLS.clear();
             }
             if (this.bn.getText() == "BackSpc") {
-                
-                if (this.tf.getLength()==num.size() && this.tf.getLength()!=0){
+
+                if (this.tf.getLength() == SYMBOLS.size() && this.tf.getLength() != 0) {
                     this.tf.deleteText(tf.getLength() - 1, tf.getLength());
-                    num.remove(num.size() - 1);}
-                else if(this.tf.getLength()>num.size()){
-                    this.tf.deleteText(tf.getLength() - 1, tf.getLength());}
-                else {tf.clear();}
-                    
+                    SYMBOLS.remove(SYMBOLS.size() - 1);
+                } else if (this.tf.getLength() > SYMBOLS.size()) {
+                    this.tf.deleteText(tf.getLength() - 1, tf.getLength());
+                } else {
+                    tf.clear();
+                }
+
             }
             if (bn.getText() == "=") {
-                if (num.get(1) == "+") {
+                if (SYMBOLS.get(1) == "+") {
 
-                    int sum = Integer.parseInt(num.get(0)) + Integer.parseInt(num.get(2));
+                    int sum = Integer.parseInt(SYMBOLS.get(0)) + Integer.parseInt(SYMBOLS.get(2));
                     this.tf.appendText("" + sum);
                     this.l.setText("" + sum);
 
-                }
-                else if (num.get(1) == "-") {
+                } else if (SYMBOLS.get(1) == "-") {
 
-                    int diff = Integer.parseInt(num.get(0)) - Integer.parseInt(num.get(2));
+                    int diff = Integer.parseInt(SYMBOLS.get(0)) - Integer.parseInt(SYMBOLS.get(2));
                     this.tf.appendText("" + diff);
                     this.l.setText("" + diff);
 
-                }
-                else if (num.get(1) == "×") {
-                    num.add(this.bn.getText());
-                    int product = Integer.parseInt(num.get(0)) * Integer.parseInt(num.get(2));
+                } else if (SYMBOLS.get(1) == "×") {
+                    SYMBOLS.add(this.bn.getText());
+                    int product = Integer.parseInt(SYMBOLS.get(0)) * Integer.parseInt(SYMBOLS.get(2));
                     this.tf.appendText("" + product);
                     this.l.setText("" + product);
 
-                }
-                else if (num.get(1) == "/") {
+                } else if (SYMBOLS.get(1) == "/") {
 
-                    double divid = Integer.parseInt(num.get(0)) / (double) Integer.parseInt(num.get(2));
+                    double divid = Integer.parseInt(SYMBOLS.get(0)) / (double) Integer.parseInt(SYMBOLS.get(2));
                     this.tf.appendText("" + divid);
                     this.l.setText("" + divid);
 
-                }
-                else if (num.get(1) == "%") {
+                } else if (SYMBOLS.get(1) == "%") {
 
-                    int modul = Integer.parseInt(num.get(0)) % Integer.parseInt(num.get(2));
+                    int modul = Integer.parseInt(SYMBOLS.get(0)) % Integer.parseInt(SYMBOLS.get(2));
                     this.tf.appendText("" + modul);
                     this.l.setText("" + modul);
 
